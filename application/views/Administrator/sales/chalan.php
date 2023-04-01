@@ -47,7 +47,6 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-6">
-                                <b>Customer Id: </b>{{ sales.Customer_Code }}<br>
                                 <b>Name: </b>{{ sales.Customer_Name }}<br />
                                 <b>Address: </b>{{ sales.Customer_Address }}<br />
                                 <b>Contact: </b>{{ sales.Customer_Mobile }}
@@ -281,6 +280,9 @@ new Vue({
                     row.lastChild.remove();
                 })
             }
+
+            let titleText = `Chalan - ${this.sales.Customer_Name}`;
+            reportWindow.document.title = titleText
 
             let invoiceStyle = reportWindow.document.createElement('style');
             invoiceStyle.innerHTML = this.style.innerHTML;

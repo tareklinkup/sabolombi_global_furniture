@@ -80,13 +80,15 @@ const quotationInvoice = Vue.component("quotation-invoice", {
                         <table _a584de>
                             <thead>
                                 <tr style="background: #545454; color:#fff;">
-                                    <td style="width:10%">SL. NO.</td>
-                                    <td style="width:15%">PICTURE</td>
+                                    <td style="width:5%">SL. NO.</td>
+                                    <td style="width:10%">PICTURE</td>
                                     <td style="width:15%">PRODUCT NAME</td>
-                                    <td style="width: 30%">DESCRIPTION</td>
+                                    <td style="width:10%">Color</td>
+                                    <td style="width:10%">Size</td>
+                                    <td style="width:20%">DESCRIPTION</td>
                                     <td style="width:10%">QTY</td>
-                                    <td style="width:15%">UNIT PRICE</td>
-                                    <td style="width:15%">TOTAL</td>
+                                    <td style="width:10%">UNIT PRICE</td>
+                                    <td style="width:10%">TOTAL</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -96,13 +98,15 @@ const quotationInvoice = Vue.component("quotation-invoice", {
                                         <img :src="'../uploads/products/' + product.Product_Img" style="width:60px;"/>
                                     </td>
                                     <td>{{ product.Product_Name }}</td>
+                                    <td>{{ product.color_name ? product.color_name  : '-' }}</td>
+                                    <td>{{ product.size ? product.size : '-'  }}</td>
                                     <td>{{ product.Product_Custom_Name }}</td>
                                     <td>{{ product.SaleDetails_TotalQuantity }}</td>
                                     <td>{{ product.SaleDetails_Rate }}</td>
                                     <td align="right">{{ product.SaleDetails_TotalAmount }}</td>
                                 </tr>
                                 <tr style="font-weight:bold">
-                                    <td colspan="4">Total Qty</td>
+                                    <td colspan="6">Total Qty</td>
                                     <td>{{ cart.reduce(function(prev,curr){ return prev + parseFloat(curr.SaleDetails_TotalQuantity)}, 0) }}</td>
                                     <td></td>
                                     <td></td>
@@ -138,19 +142,19 @@ const quotationInvoice = Vue.component("quotation-invoice", {
                                 <td><strong>SUB TOTAL</strong></td>
                                 <td style="text-align:right">{{ quotation.SaleMaster_SubTotalAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="quotation.SaleMaster_TaxAmount != 0">
                                 <td><strong>VAT</strong></td>
                                 <td style="text-align:right">{{ quotation.SaleMaster_TaxAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="quotation.aitCost != 0">
                               <td><strong>AIT Cost</strong></td>
                               <td style="text-align:right">{{ quotation.aitCost }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="quotation.SaleMaster_Freight != 0">
                                 <td><strong>TRANSPORT COST</strong></td>
                                 <td style="text-align:right">{{ quotation.SaleMaster_Freight }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="quotation.SaleMaster_TotalDiscountAmount != 0">
                                 <td><strong>DISCOUNT</strong></td>
                                 <td style="text-align:right">{{ quotation.SaleMaster_TotalDiscountAmount }}</td>
                             </tr>
@@ -515,6 +519,7 @@ const quotationInvoice = Vue.component("quotation-invoice", {
                   </body>
                   </html>
               `);
+              printWindow.document.title = `Quotation - ${this.quotation.Customer_Name}`;
         let invoiceStyle = printWindow.document.createElement("style");
         invoiceStyle.innerHTML = this.style.innerHTML;
         printWindow.document.head.appendChild(invoiceStyle);

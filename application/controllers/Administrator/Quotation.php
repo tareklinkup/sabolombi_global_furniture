@@ -90,8 +90,8 @@ class Quotation extends CI_Controller
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
                     'SaleDetails_TotalAmount'   => $cartProduct->total,
-                    'color'                     => $cartProduct->color,
-                    'size'                      => $cartProduct->size,
+                    'color_id'                     => $cartProduct->color_id ?? null,
+                    'size'                      => $cartProduct->size ?? '',
                     'Status'                    => 'a',
                     'AddBy'                     => $this->session->userdata("FullName"),
                     'AddTime'                   => date('Y-m-d H:i:s'),
@@ -162,8 +162,8 @@ class Quotation extends CI_Controller
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
                     'SaleDetails_TotalAmount'   => $cartProduct->total,
                     'Product_Custom_Name'       => $cartProduct->custom_name,
-                    'color'                     => $cartProduct->color,
-                    'size'                      => $cartProduct->size,
+                    'color_id'                     => $cartProduct->color_id ?? null,
+                    'size'                      => $cartProduct->size ?? '',
                     'Status'                    => 'a',
                     'AddBy'                     => $this->session->userdata("FullName"),
                     'AddTime'                   => date('Y-m-d H:i:s'),
@@ -242,9 +242,11 @@ class Quotation extends CI_Controller
                 qd.*,
                 p.Product_Name,
                 p.Product_Img,
-                pc.ProductCategory_Name
+                pc.ProductCategory_Name,
+                c.color_name
                 from tbl_quotation_details qd
                 join tbl_product p on p.Product_SlNo = qd.Product_IDNo
+                join tbl_color c on c.color_SiNo = qd.color_id
                 join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
                 where qd.SaleMaster_IDNo = ?
                 and qd.Status != 'd'
@@ -282,10 +284,13 @@ class Quotation extends CI_Controller
             p.Product_Code,
             p.Product_Img,
             p.ProductCategory_ID,
-            pc.ProductCategory_Name
+            pc.ProductCategory_Name,
+            c.color_name,
+            c.color_SiNo
             from tbl_quotation_details qd
             left join tbl_quotation_master qm on qm.SaleMaster_SlNo = qd.SaleMaster_IDNo
             join tbl_product p on p.Product_SlNo = qd.Product_IDNo
+            join tbl_color c on c.color_SiNo = qd.color_id
             join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             where qd.Status != 'd'
             and qd.SaleDetails_BranchId = ?

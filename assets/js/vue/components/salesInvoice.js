@@ -99,8 +99,8 @@ const salesInvoice = Vue.component("sales-invoice", {
                                 <tr v-for="(product, sl) in cart">
                                     <td>{{ sl + 1 }}</td>
                                     <td>{{ product.Product_Name }}</td>
-                                    <td>{{ product.color_name }}</td>
-                                    <td>{{ product.size }}</td>
+                                    <td>{{ product.color_name ? product.color_name : '-' }}</td>
+                                    <td>{{ product.size ? product.size : '-'  }}</td>
                                     <td>{{ product.SaleDetails_TotalQuantity }}</td>
                                     <td>{{ product.Unit_Name }}</td>
                                     <td>{{ product.SaleDetails_Rate }}</td>
@@ -117,8 +117,20 @@ const salesInvoice = Vue.component("sales-invoice", {
                         </table>
                     </div>
                 </div>
+
+                <div class="row"> 
+                    <div class="col-xs-6" style="margin-top:20px;">
+                        <table _t92sadbc2>
+                            <tr  v-if="sales.warrenty != ''">
+                                <td>
+                                <strong>In Word: </strong> {{ convertNumberToWords(sales.SaleMaster_TotalSaleAmount) }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
                 <div class="row">
-                  <!--  <div class="col-xs-6">
+                    <div class="col-xs-6">
                         <br>
                         <table class="pull-left">
                             <tr>
@@ -140,32 +152,23 @@ const salesInvoice = Vue.component("sales-invoice", {
                                 <td style="text-align:right">{{ (parseFloat(sales.SaleMaster_Previous_Due) + parseFloat(sales.SaleMaster_DueAmount == null ? 0.00 : sales.SaleMaster_DueAmount)).toFixed(2) }}</td>
                             </tr>
                         </table>
-                    </div> -->
+                    </div> 
 
-                    <div class="col-xs-6" style="margin-top:20px;">
-                        <table _t92sadbc2>
-                            <tr  v-if="sales.warrenty != ''">
-                                <td>
-                                <strong>In Word: </strong> {{ convertNumberToWords(sales.SaleMaster_TotalSaleAmount) }}
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
                     <div class="col-xs-6">
                         <table _t92sadbc2>
                             <tr>
                                 <td style="text-align:right;width:140px;">SUBTOTAL</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_SubTotalAmount }}</td>
                             </tr>
-                            <tr v-if="sales.SaleMaster_TaxAmount > 0">
+                            <tr v-if="sales.SaleMaster_TaxAmount != 0">
                                 <td style="text-align:right;width:140px;">VAT</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TaxAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="sales.SaleMaster_Freight != 0">
                                 <td style="text-align:right;width:140px;">TRANSPORT COST</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_Freight }}</td>
                             </tr>
-                            <tr v-if="sales.aitCost > 0">
+                            <tr v-if="sales.aitCost != 0">
                                 <td style="text-align:right;width:140px;">AIT</td>
                                 <td style="text-align:right">{{ sales.aitCost }}</td>
                             </tr>
@@ -174,7 +177,7 @@ const salesInvoice = Vue.component("sales-invoice", {
                                 <td style="text-align:right;width:140px;">TOTAL AMOUNT</td>
                                 <td style="text-align:right">{{ totalAmount }}</td>
                             </tr>
-                            <tr v-if="sales.SaleMaster_TotalDiscountAmount > 0">
+                            <tr v-if="sales.SaleMaster_TotalDiscountAmount != 0">
                                 <td style="text-align:right;width:140px;">DISCOUNT</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TotalDiscountAmount }}</td>
                             </tr>
@@ -183,16 +186,16 @@ const salesInvoice = Vue.component("sales-invoice", {
                                 <td style="text-align:right;width:140px;">TOTAL</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TotalSaleAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="sales.SaleMaster_PaidAmount != 0">
                                 <td style="text-align:right;width:140px;">CASH PAYMENT</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_PaidAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="sales.SaleMaster_BankPaidAmount != 0">
                                 <td style="text-align:right;width:140px;">BANK PAYMENT</td>
                                 <td style="text-align:right">{{ sales.SaleMaster_BankPaidAmount }}</td>
                             </tr>
                             <tr><td colspan="2" style="border-bottom: 2px solid black"></td></tr>
-                            <tr style="font-weight:bold">
+                            <tr style="font-weight:bold" v-if="sales.SaleMaster_DueAmount != 0">
                                 <td style="text-align:right;width:140px;"><strong>BALANCE DUE</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_DueAmount }}</td>
                             </tr>                            
@@ -201,9 +204,9 @@ const salesInvoice = Vue.component("sales-invoice", {
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                    <strong>Warranty: </strong><br><span style="white-space: pre-wrap">{{ sales.warrenty }}</span>                    
+                    <strong v-if="sales.warrenty != '' "> Warranty: </strong><br><span style="white-space: pre-wrap">{{ sales.warrenty }}</span>                    
                     <br><br>
-                        <strong>Note: </strong>
+                        <strong v-if="sales.SaleMaster_Description != '' ">Note: </strong>
                         <p style="white-space: pre-line">{{ sales.SaleMaster_Description }}</p>
                     </div>
                 </div>
@@ -561,6 +564,9 @@ const salesInvoice = Vue.component("sales-invoice", {
                     </html>
 				`);
       }
+
+      printWindow.document.title = `Invoice- ${this.sales.Customer_Name }`;
+
       let invoiceStyle = printWindow.document.createElement("style");
       invoiceStyle.innerHTML = this.style.innerHTML;
       printWindow.document.head.appendChild(invoiceStyle);

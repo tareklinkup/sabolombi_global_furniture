@@ -17,10 +17,10 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                 </div>
                 <div class="row">
                     <div class="col-xs-7">
-                        <strong>Supplier Id:</strong> {{ purchase.Supplier_Code }}<br>
-                        <strong>Supplier Name:</strong> {{ purchase.Supplier_Name }}<br>
-                        <strong>Supplier Address:</strong> {{ purchase.Supplier_Address }}<br>
-                        <strong>Supplier Mobile:</strong> {{ purchase.Supplier_Mobile }}
+                        <strong> Id:</strong> {{ purchase.Supplier_Code }}<br>
+                        <strong> Name:</strong> {{ purchase.Supplier_Name }}<br>
+                        <strong> Address:</strong> {{ purchase.Supplier_Address }}<br>
+                        <strong> Mobile:</strong> {{ purchase.Supplier_Mobile }}
                     </div>
                     <div class="col-xs-5 text-right">
                         <strong>Purchase by:</strong> {{ purchase.AddBy }}<br>
@@ -90,15 +90,15 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                                 <td><strong>Sub Total:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_SubTotalAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="purchase.PurchaseMaster_Tax != 0">
                                 <td><strong>VAT:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_Tax }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="purchase.PurchaseMaster_Freight != 0">
                                 <td><strong>Transport Cost:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_Freight }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="purchase.PurchaseMaster_DiscountAmount != 0">
                                 <td><strong>Discount:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_DiscountAmount }}</td>
                             </tr>
@@ -107,12 +107,12 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                                 <td><strong>Total:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_TotalAmount }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="purchase.PurchaseMaster_PaidAmount != 0">
                                 <td><strong>Paid:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_PaidAmount }}</td>
                             </tr>
                             <tr><td colspan="2" style="border-bottom: 1px solid #ccc"></td></tr>
-                            <tr>
+                            <tr v-if="purchase.PurchaseMaster_DueAmount != 0">
                                 <td><strong>Due:</strong></td>
                                 <td style="text-align:right">{{ purchase.PurchaseMaster_DueAmount }}</td>
                             </tr>

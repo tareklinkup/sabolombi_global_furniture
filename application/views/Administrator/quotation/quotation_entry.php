@@ -201,24 +201,32 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" style="display: none;">
-                                    <label class="col-sm-3 control-label no-padding-right"> Size </label>
-                                    <div class="col-sm-9">
-                                        <input type="text" v-model="size" placeholder="Size" class="form-control" />
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label no-padding-right"> Color </label>
+                                    <div class="col-xs-8">
+                                        <v-select v-bind:options="colors" v-model="selectedColor" label="color_name">
+                                        </v-select>
+                                    </div>
+                                    <div class="col-xs-1" style="padding: 0;">
+                                        <a href="<?= base_url('color') ?>" class="btn btn-xs btn-danger"
+                                            style="height: 25px; border: 0; width: 27px; margin-left: -10px;"
+                                            target="_blank" title="Add New Color"><i class="fa fa-plus"
+                                                aria-hidden="true" style="margin-top: 5px;"></i></a>
                                     </div>
                                 </div>
 
                                 <div class="form-group" style="display: none;">
-                                    <label class="col-sm-3 control-label no-padding-right"> Color </label>
-                                    <div class="col-sm-9">
-                                        <input type="text" v-model="color" placeholder="Color" class="form-control" />
+                                    <label class="col-xs-3 control-label no-padding-right"> Brand </label>
+                                    <div class="col-xs-9">
+                                        <input type="text" id="brand" placeholder="Group" class="form-control" />
                                     </div>
                                 </div>
 
-                                <div class="form-group" style="display: none;">
-                                    <label class="col-sm-3 control-label no-padding-right"> Brand </label>
-                                    <div class="col-sm-9">
-                                        <input type="text" placeholder="Group" class="form-control" />
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label no-padding-right"> Size </label>
+                                    <div class="col-xs-9">
+                                        <input type="text" placeholder="size" class="form-control"
+                                            v-model="quotation.size" />
                                     </div>
                                 </div>
 
@@ -290,8 +298,8 @@
                             <th style="width:15%;color:#000;">Category</th>
                             <th style="width:20%;color:#000;">Product Name</th>
                             <th style="width:20%;color:#000;">Description</th>
-                            <!-- <th style="width:10%;color:#000;">Size</th>
-							<th style="width:7%;color:#000;">Color</th> -->
+                            <th style="width:10%;color:#000;">Size</th>
+                            <th style="width:7%;color:#000;">Color</th>
                             <th style="width:7%;color:#000;">Qty</th>
                             <th style="width:8%;color:#000;">Rate</th>
                             <th style="width:15%;color:#000;">Total Amount</th>
@@ -304,18 +312,18 @@
                             <td>{{ product.categoryName }}</td>
                             <td>{{ product.name }}</td>
                             <td>
-                                <input type="text" class="form-control" v-model="product.custom_name">
-                                <!-- {{ product.custom_name }} -->
+                                <!-- <input type="text" class="form-control" v-model="product.custom_name"> -->
+                                <textarea name="" id="" cols="30" rows="10" v-model="product.custom_name"></textarea>
                             </td>
-                            <!-- <td>{{ product.size }}</td>
-							<td>{{ product.color }}</td> -->
+                            <td>{{ product.size }}</td>
+                            <td>{{ product.color_name }}</td>
                             <td>{{ product.quantity }}</td>
                             <td>{{ product.salesRate }}</td>
                             <td>{{ product.total }}</td>
                             <td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
                         </tr>
                         <tr>
-                            <td colspan="6" style="text-align: left;">
+                            <td colspan="8" style="text-align: left;">
                                 <label for=""><strong>Warrenty</strong></label>
                                 <textarea class="form-control" cols="30" rows="2" placeholder="Warrenty text here...."
                                     v-model="quotation.warrenty"></textarea>
@@ -327,7 +335,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="9" style="text-align: left;">
+                            <td colspan="11" style="text-align: left;">
                                 <label for=""><strong>Payment Note</strong></label>
                                 <textarea class="form-control" cols="30" rows="5" placeholder="Payment note here...."
                                     v-model="quotation.payment_note"></textarea>
@@ -579,6 +587,8 @@ new Vue({
                 customerAddress: '',
                 quotationBy: '<?php echo $this->session->userdata("FullName"); ?>',
                 quotationFrom: '',
+                color_id: null,
+                size: '',
                 quotationDate: '',
                 subTotal: 0.00,
                 discount: 0.00,
@@ -628,6 +638,11 @@ new Vue({
                 Product_SellingPrice: 0.00,
                 total: 0.00,
             },
+            selectedColor: {
+                color_SiNo: '',
+                color_name: '',
+            },
+            colors: [],
             imgUrl: '',
             size: '',
             color: '',
@@ -639,6 +654,7 @@ new Vue({
         this.getBranches();
         this.getProducts();
         this.getBank();
+        this.getColors();
 
         if (this.quotation.quotationId != 0) {
             this.getQuotations();
@@ -685,6 +701,12 @@ new Vue({
                     Customer_Address: '',
                     Customer_Type: 'G'
                 })
+            })
+        },
+        getColors() {
+            axios.get('/get_colors').then(res => {
+                // console.log(res);
+                this.colors = res.data;
             })
         },
         getBranches() {
@@ -736,8 +758,9 @@ new Vue({
                 salesRate: this.selectedProduct.Product_SellingPrice,
                 quantity: this.selectedProduct.quantity,
                 total: this.selectedProduct.total,
-                color: this.color,
-                size: this.size
+                color_id: this.selectedColor.color_SiNo,
+                color_name: this.selectedColor.color_name,
+                size: this.quotation.size
             }
 
             if (product.productId == '') {
@@ -768,8 +791,8 @@ new Vue({
                 this.cart.splice(cartInd, 1);
             }
 
-            this.cart.unshift(product);
-            this.clearProduct();
+            this.cart.push(product);
+            //this.clearProduct();
             this.calculateTotal();
         },
         removeFromCart(ind) {
@@ -913,9 +936,10 @@ new Vue({
                         salesRate: product.SaleDetails_Rate,
                         quantity: product.SaleDetails_TotalQuantity,
                         total: product.SaleDetails_TotalAmount,
-                        color: product.color,
-                        size: product.size,
-                        custom_name: product.Product_Custom_Name
+                        custom_name: product.Product_Custom_Name,
+                        color_name: product.color_name,
+                        color_id: product.color_SiNo,
+                        size: product.size
                     }
 
                     this.cart.push(cartProduct);
