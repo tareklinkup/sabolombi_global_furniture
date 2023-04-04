@@ -90,8 +90,8 @@ class Quotation extends CI_Controller
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
                     'SaleDetails_TotalAmount'   => $cartProduct->total,
-                    'color_id'                     => $cartProduct->color_id ?? null,
-                    'size'                      => $cartProduct->size ?? '',
+                    'color_id'                     => $cartProduct->color_id,
+                    'size'                      => $cartProduct->size,
                     'Status'                    => 'a',
                     'AddBy'                     => $this->session->userdata("FullName"),
                     'AddTime'                   => date('Y-m-d H:i:s'),
@@ -245,9 +245,9 @@ class Quotation extends CI_Controller
                 pc.ProductCategory_Name,
                 c.color_name
                 from tbl_quotation_details qd
-                join tbl_product p on p.Product_SlNo = qd.Product_IDNo
-                join tbl_color c on c.color_SiNo = qd.color_id
-                join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
+                left join tbl_product p on p.Product_SlNo = qd.Product_IDNo
+                left join tbl_color c on c.color_SiNo = qd.color_id
+                left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
                 where qd.SaleMaster_IDNo = ?
                 and qd.Status != 'd'
             ", $quote->SaleMaster_SlNo)->result();
